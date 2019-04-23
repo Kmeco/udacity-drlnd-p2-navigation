@@ -3,4 +3,7 @@ Reacher_2.app
 __pycache__/
 .idea/
 .DS_store/
+unity-environment.log
 
+
+\.DS_Store

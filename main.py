@@ -1,3 +1,4 @@
+import time
 from collections import deque
 from ddpg_agent import Agent
 from unityagents import UnityEnvironment
@@ -11,18 +12,18 @@ def ddpg(n_episodes=100, max_t=200, print_every=10):
     scores = []
     for i_episode in range(1, n_episodes +1):
         env_info = env.reset(train_mode=True)[brain_name]
-        state = env_info.vector_observations[0]
+        states = env_info.vector_observations
         agent.reset()
         score = 0
         for t in range(max_t):
-            action = agent.act(state)
-            env_info = env.step(action)[brain_name]
-            next_state = env_info.vector_observations[0]
-            reward = env_info.rewards[0]
-            done = env_info.local_done[0]
-            agent.step(state, action, reward, next_state, done)
-            state = next_state
-            score += reward
+            actions= agent.act(states)
+            env_info = env.step(actions)[brain_name]
+            next_state = env_info.vector_observations
+            reward = env_info.rewards
+            done = env_info.local_done
+            agent.step(states, actions, reward, next_state, done)
+            states = next_state
+            score += np.average(reward)
             if done:
                 break
         scores_deque.append(score)
@@ -37,7 +38,7 @@ def ddpg(n_episodes=100, max_t=200, print_every=10):
 
 
 if __name__ == "__main__":
-    env = UnityEnvironment(file_name='Reacher.app', no_graphics=True)
+    env = UnityEnvironment(file_name='Reacher_2.app', no_graphics=True)
     brain_name = env.brain_names[0]
     brain = env.brains[brain_name]
     # reset the environment
@@ -47,7 +48,9 @@ if __name__ == "__main__":
     # examine the state space
     states = env_info.vector_observations
     state_size = states.shape[1]
-
+    print(states.shape)
+    print(np.average(env_info.rewards))
+    exit()
     agent = Agent(state_size=state_size, action_size=action_size, random_seed=2)
 
     scores = ddpg()
@@ -57,4 +60,4 @@ if __name__ == "__main__":
     plt.plot(np.arange(1, len(scores ) +1), scores)
     plt.ylabel('Score')
     plt.xlabel('Episode #')
-    plt.show()
+    plt.savefig('scores_{}.png'.format(int(time.time())))
