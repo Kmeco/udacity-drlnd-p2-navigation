@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 def ddpg(n_episodes=100, max_t=100, print_every=10):
     scores_deque = deque(maxlen=print_every)
     scores = []
+    last_ep_score = 0
     for i_episode in range(1, n_episodes +1):
         env_info = env.reset(train_mode=True)[brain_name]
         states = env_info.vector_observations
@@ -29,11 +30,13 @@ def ddpg(n_episodes=100, max_t=100, print_every=10):
         scores_deque.append(score)
         scores.append(score)
         print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_deque)), end="")
-        torch.save(agent.actor_local.state_dict(), 'checkpoint_actor.pth')
-        torch.save(agent.critic_local.state_dict(), 'checkpoint_critic.pth')
+        if last_ep_score <= score:
+            torch.save(agent.actor_local.state_dict(), 'checkpoint_actor.pth')
+            torch.save(agent.critic_local.state_dict(), 'checkpoint_critic.pth')
         if i_episode % print_every == 0:
             print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_deque)))
-
+            with open('scores.txt', 'w') as f:
+                f.write(scores)
     return scores
 
 
