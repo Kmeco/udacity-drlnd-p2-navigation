@@ -7,7 +7,7 @@ import torch
 import matplotlib.pyplot as plt
 
 
-def ddpg(n_episodes=100, max_t=200, print_every=10):
+def ddpg(n_episodes=100, max_t=100, print_every=10):
     scores_deque = deque(maxlen=print_every)
     scores = []
     for i_episode in range(1, n_episodes +1):
@@ -24,7 +24,7 @@ def ddpg(n_episodes=100, max_t=200, print_every=10):
             agent.step(states, actions, reward, next_state, done)
             states = next_state
             score += np.average(reward)
-            if done:
+            if np.sum(done) != 0:
                 break
         scores_deque.append(score)
         scores.append(score)
@@ -38,7 +38,7 @@ def ddpg(n_episodes=100, max_t=200, print_every=10):
 
 
 if __name__ == "__main__":
-    env = UnityEnvironment(file_name='Reacher_Linux/Reacher.x86_64', no_graphics=True)
+    env = UnityEnvironment(file_name='Reacher_2.app', no_graphics=True)
     brain_name = env.brain_names[0]
     brain = env.brains[brain_name]
     # reset the environment
