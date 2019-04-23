@@ -16,7 +16,7 @@ def ddpg(n_episodes=100, max_t=100, print_every=10):
         states = env_info.vector_observations
         agent.reset()
         score = 0
-        for t in range(max_t):
+        while True:
             actions= agent.act(states)
             env_info = env.step(actions)[brain_name]
             next_state = env_info.vector_observations
@@ -36,7 +36,7 @@ def ddpg(n_episodes=100, max_t=100, print_every=10):
         if i_episode % print_every == 0:
             print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_deque)))
             with open('scores.txt', 'w') as f:
-                f.write(scores)
+                f.write(str(scores))
     return scores
 
 
