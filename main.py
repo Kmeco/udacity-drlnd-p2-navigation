@@ -38,7 +38,7 @@ def ddpg(n_episodes=100, max_t=200, print_every=10):
 
 
 if __name__ == "__main__":
-    env = UnityEnvironment(file_name='Reacher_2.app', no_graphics=True)
+    env = UnityEnvironment(file_name='Reacher_Linux/Reacher.x86_64', no_graphics=True)
     brain_name = env.brain_names[0]
     brain = env.brains[brain_name]
     # reset the environment
@@ -50,7 +50,6 @@ if __name__ == "__main__":
     state_size = states.shape[1]
     print(states.shape)
     print(np.average(env_info.rewards))
-    exit()
     agent = Agent(state_size=state_size, action_size=action_size, random_seed=2)
 
     scores = ddpg()
