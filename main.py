@@ -52,7 +52,6 @@ if __name__ == "__main__":
     states = env_info.vector_observations
     state_size = states.shape[1]
     print(states.shape)
-    print(np.average(env_info.rewards))
     agent = Agent(state_size=state_size, action_size=action_size, random_seed=2)
 
     scores = ddpg()
