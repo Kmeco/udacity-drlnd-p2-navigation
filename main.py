@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 
 
 def ddpg(n_episodes=100, max_t=100, print_every=10):
+    session = int(time.time())
     scores_deque = deque(maxlen=print_every)
     scores = []
     last_ep_score = 0
@@ -35,12 +36,14 @@ def ddpg(n_episodes=100, max_t=100, print_every=10):
             torch.save(agent.critic_local.state_dict(), 'checkpoint_critic.pth')
         if i_episode % print_every == 0:
             print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_deque)))
-            with open('scores.txt', 'w') as f:
+            with open('scores_{}.txt'.format(session), 'w') as f:
                 f.write(str(scores))
     return scores
 
 
 if __name__ == "__main__":
+    load = 1
+
     env = UnityEnvironment(file_name='Reacher_2.app', no_graphics=True)
     brain_name = env.brain_names[0]
     brain = env.brains[brain_name]
@@ -53,6 +56,12 @@ if __name__ == "__main__":
     state_size = states.shape[1]
     print(states.shape)
     agent = Agent(state_size=state_size, action_size=action_size, random_seed=2)
+
+    if load:
+        agent.actor_local.load_state_dict(torch.load('checkpoint_actor.pth'))
+        agent.actor_target.load_state_dict(torch.load('checkpoint_actor.pth'))
+        agent.critic_local.load_state_dict(torch.load('checkpoint_critic.pth'))
+        agent.critic_target.load_state_dict(torch.load('checkpoint_critic.pth'))
 
     scores = ddpg()
 
