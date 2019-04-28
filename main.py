@@ -45,7 +45,7 @@ def ddpg(n_episodes=100, max_t=100, print_every=10):
 if __name__ == "__main__":
     load = 1
 
-    env = UnityEnvironment(file_name='Reacher_2.app', no_graphics=True)
+    env = UnityEnvironment(file_name='Reacher_Linux/Reacher.x86_64', no_graphics=True)
     brain_name = env.brain_names[0]
     brain = env.brains[brain_name]
     # reset the environment
