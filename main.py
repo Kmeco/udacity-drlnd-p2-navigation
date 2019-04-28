@@ -38,6 +38,7 @@ def ddpg(n_episodes=100, max_t=100, print_every=10):
             print('\rEpisode {}\tAverage Score: {:.2f}'.format(i_episode, np.mean(scores_deque)))
             with open('scores_{}.txt'.format(session), 'w') as f:
                 f.write(str(scores))
+        last_ep_score = score
     return scores
 
 
