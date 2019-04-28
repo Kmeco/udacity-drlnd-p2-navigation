@@ -16,7 +16,7 @@ TAU = 1e-3               # for soft update of target parameters
 LR_ACTOR = 1e-4         # learning rate of the actor
 LR_CRITIC = 1e-4        # learning rate of the critic
 WEIGHT_DECAY = 0.01        # L2 weight decay
-
+UPDATE_STEP = 4
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
@@ -59,10 +59,10 @@ class Agent():
             self.memory.add(state[i], action[i], reward[i], next_state[i], done[i])
 
         # Learn, if enough samples are available in memory
-
-            if len(self.memory) > BATCH_SIZE:
-                experiences = self.memory.sample()
-                self.learn(experiences, GAMMA)
+            if not i % UPDATE_STEP:
+                if len(self.memory) > BATCH_SIZE:
+                    experiences = self.memory.sample()
+                    self.learn(experiences, GAMMA)
 
     def act(self, state, add_noise=True):
         """Returns actions for given state as per current policy."""
