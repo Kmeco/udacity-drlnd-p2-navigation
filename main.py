@@ -19,9 +19,9 @@ def ddpg(n_episodes=150, max_t=1000, print_every=10):
         env_info = env.reset(train_mode=True)[brain_name]
         states = env_info.vector_observations
         agent.reset()
-        score = 0
+        scores = np.zeros(num_agents)
         start_time = time.time()
-        for t in max_t:
+        for t in range(max_t):
             actions= agent.act(states)
             env_info = env.step(actions)[brain_name]
             next_state = env_info.vector_observations
@@ -29,21 +29,21 @@ def ddpg(n_episodes=150, max_t=1000, print_every=10):
             done = env_info.local_done
             agent.step(states, actions, reward, next_state, done, t)
             states = next_state
-            score += np.average(reward)
+            scores += reward
             if np.sum(done) != 0:
                 break
         duration = time.time() - start_time
         min_scores.append(np.min(scores))             # save lowest score for a single agent
         max_scores.append(np.max(scores))             # save highest score for a single agent
         mean_scores.append(np.mean(scores))           # save mean score for the episode
+
         scores_deque.append(mean_scores[-1])         # save mean score to window
         moving_avgs.append(np.mean(scores_deque))    # save moving average
 
-        scores_deque.append(score)
-        scores.append(score)
+        scores_deque.append(mean_scores[-1])
         print('\rEpisode {} ({} sec)  -- \tMin: {:.1f}\tMax: {:.1f}\tMean: {:.1f}\tMov. Avg: {:.1f}'.format(i_episode,
                             round(duration), min_scores[-1], max_scores[-1], mean_scores[-1], moving_avgs[-1]), end="")
-        if last_ep_score <= score:
+        if last_ep_score <= mean_scores[-1]:
             torch.save(agent.actor_local.state_dict(), 'checkpoint_actor.pth')
             torch.save(agent.critic_local.state_dict(), 'checkpoint_critic.pth')
         if i_episode % print_every == 0:
@@ -57,8 +57,8 @@ def ddpg(n_episodes=150, max_t=1000, print_every=10):
             torch.save(agent.critic_local.state_dict(), 'checkpoint_critic_final.pth')
             with open('scores_final_{}.txt'.format(session), 'w') as f:
                 f.write(str(scores))
-        last_ep_score = score
-    return scores
+        last_ep_score = mean_scores[-1]
+    return mean_scores, moving_avgs
 
 
 if __name__ == "__main__":
@@ -74,6 +74,7 @@ if __name__ == "__main__":
     # examine the state space
     states = env_info.vector_observations
     state_size = states.shape[1]
+    num_agents = len(env_info.agents)
     agent = Agent(state_size=state_size, action_size=action_size, random_seed=2)
 
     if load:
