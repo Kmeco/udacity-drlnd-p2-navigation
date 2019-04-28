@@ -7,7 +7,7 @@ import torch
 import matplotlib.pyplot as plt
 
 
-def ddpg(n_episodes=150, max_t=1000, print_every=10):
+def ddpg(n_episodes=500, max_t=1000, print_every=10):
     session = int(time.time())
     scores_deque = deque(maxlen=print_every)
     mean_scores = []  # list of mean scores from each episode
@@ -64,7 +64,7 @@ def ddpg(n_episodes=150, max_t=1000, print_every=10):
 if __name__ == "__main__":
     load = 0
 
-    env = UnityEnvironment(file_name='Reacher_2.app', no_graphics=True)
+    env = UnityEnvironment(file_name='Reacher_Linux/Reacher.x86_64', no_graphics=True)
     brain_name = env.brain_names[0]
     brain = env.brains[brain_name]
     # reset the environment
