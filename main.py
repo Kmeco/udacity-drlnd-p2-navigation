@@ -43,7 +43,7 @@ def ddpg(n_episodes=100, max_t=100, print_every=10):
 
 
 if __name__ == "__main__":
-    load = 1
+    load = 0
 
     env = UnityEnvironment(file_name='Reacher_Linux/Reacher.x86_64', no_graphics=True)
     brain_name = env.brain_names[0]
@@ -59,10 +59,10 @@ if __name__ == "__main__":
     agent = Agent(state_size=state_size, action_size=action_size, random_seed=2)
 
     if load:
-        agent.actor_local.load_state_dict(torch.load('checkpoint_actor.pth'))
-        agent.actor_target.load_state_dict(torch.load('checkpoint_actor.pth'))
-        agent.critic_local.load_state_dict(torch.load('checkpoint_critic.pth'))
-        agent.critic_target.load_state_dict(torch.load('checkpoint_critic.pth'))
+        agent.actor_local.load_state_dict(torch.load('ch_a.pth'))
+        agent.actor_target.load_state_dict(torch.load('ch_a.pth'))
+        agent.critic_local.load_state_dict(torch.load('ch_c.pth'))
+        agent.critic_target.load_state_dict(torch.load('ch_c.pth'))
 
     scores = ddpg()
 
