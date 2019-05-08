@@ -27,7 +27,8 @@ def ddpg(n_episodes=150, max_t=1000, print_every=10):
             next_state = env_info.vector_observations
             reward = env_info.rewards
             done = env_info.local_done
-            agent.step(states, actions, reward, next_state, done, t)
+            for i in range(len(states)):
+                agent.step(states[i], actions[i], reward[i], next_state[i], done[i], t)
             states = next_state
             scores += reward
             if np.sum(done) != 0:
@@ -41,22 +42,22 @@ def ddpg(n_episodes=150, max_t=1000, print_every=10):
         moving_avgs.append(np.mean(scores_deque))    # save moving average
 
         scores_deque.append(mean_scores[-1])
-        print('\rEpisode {} ({} sec)  -- \tMin: {:.1f}\tMax: {:.1f}\tMean: {:.1f}\tMov. Avg: {:.1f}'.format(i_episode,
+        print('\rEpisode {} took {} sec  -- \tMin: {:.1f}\tMax: {:.1f}\tMean: {:.1f}\tMov. Avg: {:.1f}'.format(i_episode,
                             round(duration), min_scores[-1], max_scores[-1], mean_scores[-1], moving_avgs[-1]), end="")
         if last_ep_score <= mean_scores[-1]:
             torch.save(agent.actor_local.state_dict(), 'checkpoint_actor.pth')
             torch.save(agent.critic_local.state_dict(), 'checkpoint_critic.pth')
         if i_episode % print_every == 0:
-            print('\rEpisode {} ({} sec)  -- \tMin: {:.1f}\tMax: {:.1f}\tMean: {:.1f}\tMov. Avg: {:.1f}'.format(
+            print('\rEpisode {} took {} sec  -- \tMin: {:.1f}\tMax: {:.1f}\tMean: {:.1f}\tMov. Avg: {:.1f}'.format(
                     i_episode,round(duration), min_scores[-1], max_scores[-1], mean_scores[-1], moving_avgs[-1]))
 
             with open('scores_{}.txt'.format(session), 'w') as f:
-                f.write(str(scores))
+                f.write(str(mean_scores))
         if moving_avgs[-1] >= 30:
             torch.save(agent.actor_local.state_dict(), 'checkpoint_actor_final.pth')
             torch.save(agent.critic_local.state_dict(), 'checkpoint_critic_final.pth')
             with open('scores_final_{}.txt'.format(session), 'w') as f:
-                f.write(str(scores))
+                f.write(str(mean_scores))
         last_ep_score = mean_scores[-1]
     return mean_scores, moving_avgs
 
@@ -64,17 +65,17 @@ def ddpg(n_episodes=150, max_t=1000, print_every=10):
 if __name__ == "__main__":
     load = 0
 
-    env = UnityEnvironment(file_name='Reacher_2.app', no_graphics=True)
+    env = UnityEnvironment(file_name='Reacher_Linux/Reacher.x86_64', no_graphics=True)
     brain_name = env.brain_names[0]
     brain = env.brains[brain_name]
     # reset the environment
-    env_info = env.reset(train_mode=True)[brain_name]
+    env_inf = env.reset(train_mode=True)[brain_name]
     # size of each action
     action_size = brain.vector_action_space_size
     # examine the state space
-    states = env_info.vector_observations
-    state_size = states.shape[1]
-    num_agents = len(env_info.agents)
+    states_sample = env_inf.vector_observations
+    state_size = states_sample.shape[1]
+    num_agents = len(env_inf.agents)
     agent = Agent(state_size=state_size, action_size=action_size, random_seed=2)
 
     if load:
@@ -83,11 +84,11 @@ if __name__ == "__main__":
         agent.critic_local.load_state_dict(torch.load('ch_c.pth'))
         agent.critic_target.load_state_dict(torch.load('ch_c.pth'))
 
-    scores = ddpg()
+    final_scores = ddpg()
 
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    plt.plot(np.arange(1, len(scores ) +1), scores)
+    plt.plot(np.arange(1, len(final_scores) + 1), final_scores)
     plt.ylabel('Score')
     plt.xlabel('Episode #')
     plt.savefig('scores_{}.png'.format(int(time.time())))
