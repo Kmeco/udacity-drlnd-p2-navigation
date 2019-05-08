@@ -7,7 +7,7 @@ import torch
 import matplotlib.pyplot as plt
 
 
-def ddpg(n_episodes=150, max_t=1000, print_every=10):
+def ddpg(n_episodes=500, max_t=1000, print_every=10):
     session = int(time.time())
     scores_deque = deque(maxlen=print_every)
     mean_scores = []  # list of mean scores from each episode
