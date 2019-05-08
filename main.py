@@ -43,13 +43,13 @@ def ddpg(n_episodes=500, max_t=1000, print_every=10):
 
         scores_deque.append(mean_scores[-1])
         print('\rEpisode {} took {} sec  -- \tMin: {:.1f}\tMax: {:.1f}\tMean: {:.1f}\tMov. Avg: {:.1f}'.format(i_episode,
-                            round(duration), min_scores[-1], max_scores[-1], mean_scores[-1], moving_avgs[-1]), end="")
+                            round(duration), min_scores[-1], max_scores[-1], mean_scores[-1], moving_avgs[-1]))
         if last_ep_score <= mean_scores[-1]:
             torch.save(agent.actor_local.state_dict(), 'checkpoint_actor.pth')
             torch.save(agent.critic_local.state_dict(), 'checkpoint_critic.pth')
         if i_episode % print_every == 0:
-            print('\rEpisode {} took {} sec  -- \tMin: {:.1f}\tMax: {:.1f}\tMean: {:.1f}\tMov. Avg: {:.1f}'.format(
-                    i_episode,round(duration), min_scores[-1], max_scores[-1], mean_scores[-1], moving_avgs[-1]))
+            # print('\rEpisode {} took {} sec  -- \tMin: {:.1f}\tMax: {:.1f}\tMean: {:.1f}\tMov. Avg: {:.1f}'.format(
+            #         i_episode,round(duration), min_scores[-1], max_scores[-1], mean_scores[-1], moving_avgs[-1]))
 
             with open('scores_{}.txt'.format(session), 'w') as f:
                 f.write(str(mean_scores))
