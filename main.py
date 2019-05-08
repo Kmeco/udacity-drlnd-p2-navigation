@@ -53,11 +53,12 @@ def ddpg(n_episodes=500, max_t=1000, print_every=10):
 
             with open('scores_{}.txt'.format(session), 'w') as f:
                 f.write(str(mean_scores))
-        if moving_avgs[-1] >= 30:
+        if moving_avgs[-1] >= 30 and i_episode >= 100:
             torch.save(agent.actor_local.state_dict(), 'checkpoint_actor_final.pth')
             torch.save(agent.critic_local.state_dict(), 'checkpoint_critic_final.pth')
             with open('scores_final_{}.txt'.format(session), 'w') as f:
                 f.write(str(mean_scores))
+            break
         last_ep_score = mean_scores[-1]
     return mean_scores, moving_avgs
 
