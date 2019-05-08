@@ -31,7 +31,7 @@ def ddpg(n_episodes=500, max_t=1000, print_every=10):
                 agent.step(states[i], actions[i], reward[i], next_state[i], done[i], t)
             states = next_state
             scores += reward
-            if np.sum(done) != 0:
+            if np.any(done):
                 break
         duration = time.time() - start_time
         min_scores.append(np.min(scores))             # save lowest score for a single agent
